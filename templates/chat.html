@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ partner.username }}님과의 대화{% endblock %}
+{% block content %}
+<h2>{{ partner.username }}님과의 1:1 대화</h2>
+<div id="chat" data-partner-id="{{ partner.id }}" data-me="{{ current_user.username }}">
+  <ul id="messages">
+    {% for message in messages %}
+      <li>{{ message.sender_name }}: {{ message.content }}</li>
+    {% endfor %}
+  </ul>
+  <input id="chat_input" type="text" maxlength="500" placeholder="메시지를 입력하세요">
+  <button type="button">전송</button>
+</div>
+<p><a href="{{ url_for('chat_list') }}">대화 목록으로</a></p>
+
+<script src="{{ url_for('static', filename='private_chat.js') }}" defer></script>
+{% endblock %}

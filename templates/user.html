@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ user.username }}님의 프로필{% endblock %}
+{% block content %}
+<h2>{{ user.username }}</h2>
+{% if not user.is_active %}
+  <p><span class="badge bad">이용 제한된 계정</span></p>
+{% endif %}
+<p>{{ user.bio or '소개글이 없습니다.' }}</p>
+
+{% if current_user and current_user.id != user.id %}
+  <p>
+    <a href="{{ url_for('chat_with', user_id=user.id) }}">1:1 대화하기</a> ·
+    <a href="{{ url_for('report') }}">신고하기</a>
+  </p>
+  <p class="muted">신고 대상 ID: {{ user.id }}</p>
+{% endif %}
+
+<h3>판매 중인 상품</h3>
+<ul>
+  {% for product in products %}
+    <li>
+      <a href="{{ url_for('view_product', product_id=product.id) }}">{{ product.title }}</a>
+      - {{ product.price }}원
+    </li>
+  {% else %}
+    <li class="muted">등록된 상품이 없습니다.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

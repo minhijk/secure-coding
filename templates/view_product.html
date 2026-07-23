@@ -2,7 +2,56 @@
 {% block title %}상품 상세보기{% endblock %}
 {% block content %}
 <h2>{{ product.title }}</h2>
+
+{% if product.status == 'blocked' %}
+  <p><span class="badge bad">신고 누적으로 차단된 상품입니다</span></p>
+{% elif product.status == 'reserved' %}
+  <p><span class="badge">예약중</span></p>
+{% elif product.status == 'sold' %}
+  <p><span class="badge">판매 완료</span></p>
+{% endif %}
+
+{% if product.image_name %}
+  <p><img src="{{ url_for('product_image', product_id=product.id) }}"
+          alt="{{ product.title }} 상품 사진" class="product-image"></p>
+{% endif %}
+
 <p>{{ product.description }}</p>
-<p>가격: {{ product.price }}</p>
-<p>판매자: {{ seller.username if seller else '알 수 없음' }}</p>
+<p>가격: <strong>{{ '{:,}'.format(product.price|int) }}원</strong></p>
+<p>
+  판매자:
+  {% if seller %}
+    <a href="{{ url_for('view_user', user_id=seller.id) }}">{{ seller.username }}</a>
+  {% else %}
+    알 수 없음
+  {% endif %}
+</p>
+
+{% if current_user and seller and current_user.id != seller.id %}
+  {% if product.status == 'active' %}
+    <form method="post" action="{{ url_for('buy_product', product_id=product.id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <button type="submit">구매하기</button>
+    </form>
+    <p class="muted">
+      구매 시 대금이 잔액에서 차감되어 보관되며, 물건을 받고 구매를 확정하면
+      판매자에게 전달됩니다.
+    </p>
+  {% elif product.status == 'reserved' %}
+    <p class="muted">현재 다른 사용자와 거래가 진행 중입니다.</p>
+  {% endif %}
+
+  <p>
+    <a href="{{ url_for('chat_with', user_id=seller.id) }}">판매자에게 1:1 문의</a> ·
+    <a href="{{ url_for('report') }}">신고하기</a>
+  </p>
+  <p class="muted">신고 대상 ID: {{ product.id }}</p>
+{% elif current_user and seller and current_user.id == seller.id %}
+  <p>
+    {% if product.status == 'active' %}
+      <a href="{{ url_for('edit_product', product_id=product.id) }}">상품 수정</a> ·
+    {% endif %}
+    <a href="{{ url_for('trades') }}">거래 내역 보기</a>
+  </p>
+{% endif %}
 {% endblock %}

@@ -3,9 +3,26 @@
 {% block content %}
 <h2>프로필 관리</h2>
 <p>사용자명: {{ user.username }}</p>
-<form method="post">
-  소개글: <br>
-  <textarea name="bio" rows="4" cols="50">{{ user.bio or '' }}</textarea><br>
+<p>잔액: {{ '{:,}'.format(user.balance) }}원</p>
+
+<h3>소개글</h3>
+<form method="post" action="{{ url_for('profile') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <textarea name="bio" rows="4" maxlength="500">{{ user.bio or '' }}</textarea>
   <button type="submit">프로필 업데이트</button>
+</form>
+
+<h3>비밀번호 변경</h3>
+<form method="post" action="{{ url_for('change_password') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  현재 비밀번호:
+  <input type="password" name="current_password" autocomplete="current-password" required>
+  새 비밀번호:
+  <input type="password" name="new_password" autocomplete="new-password"
+         minlength="10" maxlength="128" required>
+  새 비밀번호 확인:
+  <input type="password" name="confirm_password" autocomplete="new-password"
+         minlength="10" maxlength="128" required>
+  <button type="submit">비밀번호 변경</button>
 </form>
 {% endblock %}

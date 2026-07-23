@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}내 상품 관리{% endblock %}
+{% block content %}
+<h2>내 상품 관리</h2>
+<table>
+  <tr><th>상품명</th><th>가격</th><th>상태</th><th>관리</th></tr>
+  {% for product in products %}
+    <tr>
+      <td><a href="{{ url_for('view_product', product_id=product.id) }}">{{ product.title }}</a></td>
+      <td>{{ product.price }}원</td>
+      <td>
+        {% if product.status == 'active' %}
+          <span class="badge good">판매중</span>
+        {% elif product.status == 'reserved' %}
+          <span class="badge">예약중</span>
+        {% elif product.status == 'sold' %}
+          <span class="badge good">판매완료</span>
+        {% else %}
+          <span class="badge bad">차단됨</span>
+        {% endif %}
+      </td>
+      <td>
+        {% if product.status == 'active' %}
+          <a href="{{ url_for('edit_product', product_id=product.id) }}">수정</a>
+          <form method="post" action="{{ url_for('delete_product', product_id=product.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button type="submit">삭제</button>
+          </form>
+        {% else %}
+          <span class="muted">-</span>
+        {% endif %}
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="4" class="muted">등록한 상품이 없습니다.</td></tr>
+  {% endfor %}
+</table>
+<p><a href="{{ url_for('new_product') }}">새 상품 등록</a></p>
+{% endblock %}

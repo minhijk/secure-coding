@@ -1,3 +1,6 @@
 *.db
 *.pptx
 __pycache__
+.venv/
+.pytest_cache/
+uploads/

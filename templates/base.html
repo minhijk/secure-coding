@@ -25,6 +25,24 @@
       margin-right: 15px;
       font-weight: 500;
     }
+    .nav-form {
+      display: inline;
+    }
+    .nav-link {
+      display: inline;
+      width: auto;
+      padding: 0;
+      margin: 0 15px 0 0;
+      border: 0;
+      background: transparent;
+      color: #555;
+      font: inherit;
+      font-weight: 500;
+    }
+    .nav-link:hover {
+      background: transparent;
+      color: #005BB5;
+    }
     .container {
       max-width: 800px;
       margin: 40px auto;
@@ -70,6 +88,50 @@
       border-radius: 4px;
       margin-bottom: 20px;
     }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+    th, td {
+      text-align: left;
+      padding: 8px;
+      border-bottom: 1px solid #e0e0e0;
+      vertical-align: middle;
+    }
+    th { color: #888; font-weight: 600; }
+    td form { display: inline; }
+    td button {
+      width: auto;
+      padding: 4px 10px;
+      margin: 0;
+      font-size: 13px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+      background: #eee;
+      color: #555;
+    }
+    .badge.bad { background: #FFE0E0; color: #B00020; }
+    .badge.good { background: #E3F5E7; color: #1B7A32; }
+    .inline-form { display: flex; gap: 8px; align-items: flex-start; }
+    .inline-form input { margin-bottom: 0; }
+    .inline-form button { width: auto; margin-bottom: 0; white-space: nowrap; }
+    .muted { color: #888; font-size: 14px; }
+    .product-image {
+      max-width: 100%;
+      max-height: 360px;
+      border-radius: 6px;
+      border: 1px solid #e0e0e0;
+    }
+    input[type="file"] {
+      padding: 8px;
+      background: #fafafa;
+    }
     /* 채팅 영역 스타일 */
     #chat {
       margin-top: 40px;
@@ -89,9 +151,19 @@
   <nav>
     {% if session.get('user_id') %}
       <a href="{{ url_for('dashboard') }}">대시보드</a>
+      <a href="{{ url_for('my_products') }}">내 상품</a>
+      <a href="{{ url_for('trades') }}">거래</a>
+      <a href="{{ url_for('wallet') }}">지갑</a>
+      <a href="{{ url_for('chat_list') }}">쪽지</a>
       <a href="{{ url_for('profile') }}">프로필</a>
       <a href="{{ url_for('report') }}">신고하기</a>
-      <a href="{{ url_for('logout') }}">로그아웃</a>
+      {% if current_user and current_user.is_admin %}
+        <a href="{{ url_for('admin_dashboard') }}">관리자</a>
+      {% endif %}
+      <form class="nav-form" method="post" action="{{ url_for('logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="nav-link" type="submit">로그아웃</button>
+      </form>
     {% else %}
       <a href="{{ url_for('login') }}">로그인</a>
       <a href="{{ url_for('register') }}">회원가입</a>

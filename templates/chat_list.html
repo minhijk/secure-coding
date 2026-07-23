@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}쪽지함{% endblock %}
+{% block content %}
+<h2>1:1 대화 목록</h2>
+<ul>
+  {% for partner in partners %}
+    <li><a href="{{ url_for('chat_with', user_id=partner.id) }}">{{ partner.username }}</a></li>
+  {% else %}
+    <li class="muted">대화 내역이 없습니다. 상품 상세 페이지에서 판매자에게 말을 걸어보세요.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

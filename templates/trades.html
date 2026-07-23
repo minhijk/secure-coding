@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}거래 내역{% endblock %}
+{% block content %}
+<h2>거래 내역</h2>
+<table>
+  <tr><th>상품</th><th>구분</th><th>상대</th><th>금액</th><th>상태</th><th>처리</th></tr>
+  {% for trade in trades %}
+    <tr>
+      <td>
+        {% if trade.product_id %}
+          <a href="{{ url_for('view_product', product_id=trade.product_id) }}">
+            {{ trade.product_title or '삭제된 상품' }}</a>
+        {% else %}
+          삭제된 상품
+        {% endif %}
+      </td>
+      {% if trade.buyer_id == current_user.id %}
+        <td><span class="badge">구매</span></td>
+        <td>{{ trade.seller_name }}</td>
+      {% else %}
+        <td><span class="badge">판매</span></td>
+        <td>{{ trade.buyer_name }}</td>
+      {% endif %}
+      <td>{{ '{:,}'.format(trade.amount) }}원</td>
+      <td>
+        {% if trade.status == 'completed' %}
+          <span class="badge good">{{ labels[trade.status] }}</span>
+        {% elif trade.status == 'cancelled' %}
+          <span class="badge bad">{{ labels[trade.status] }}</span>
+        {% else %}
+          <span class="badge">{{ labels[trade.status] }}</span>
+        {% endif %}
+      </td>
+      <td>
+        {# 수락은 판매자만, 구매 확정은 구매자만 노출한다. 서버에서도 동일하게 검증한다. #}
+        {% if trade.status == 'requested' and trade.seller_id == current_user.id %}
+          <form method="post" action="{{ url_for('accept_trade', trade_id=trade.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button type="submit">수락</button>
+          </form>
+        {% endif %}
+        {% if trade.status == 'accepted' and trade.buyer_id == current_user.id %}
+          <form method="post" action="{{ url_for('complete_trade', trade_id=trade.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button type="submit">구매 확정</button>
+          </form>
+        {% endif %}
+        {% if trade.status in ('requested', 'accepted') %}
+          <form method="post" action="{{ url_for('cancel_trade', trade_id=trade.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button type="submit">취소</button>
+          </form>
+        {% endif %}
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="6" class="muted">거래 내역이 없습니다.</td></tr>
+  {% endfor %}
+</table>
+<p class="muted">
+  구매 요청 시 대금이 잔액에서 차감되어 보관되며, 구매 확정 시 판매자에게 전달됩니다.
+  거래가 취소되면 전액 환불됩니다.
+</p>
+{% endblock %}

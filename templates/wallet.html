@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}지갑{% endblock %}
+{% block content %}
+<h2>지갑</h2>
+<p>현재 잔액: <strong>{{ '{:,}'.format(user.balance) }}원</strong></p>
+
+<h3>송금하기</h3>
+<form method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  받는 사람 (사용자명):
+  <input type="text" name="receiver" maxlength="20" required>
+  금액:
+  <input type="number" name="amount" min="1" max="1000000000" required>
+  <button type="submit">송금</button>
+</form>
+
+<h3>거래 내역</h3>
+<table>
+  <tr><th>일시</th><th>구분</th><th>상대</th><th>금액</th></tr>
+  {% for row in history %}
+    <tr>
+      <td>{{ row.created_at }}</td>
+      {% if row.sender_id == user.id %}
+        <td><span class="badge bad">출금</span></td>
+        <td>{{ row.receiver_name }}</td>
+        <td>-{{ '{:,}'.format(row.amount) }}원</td>
+      {% else %}
+        <td><span class="badge good">입금</span></td>
+        <td>{{ row.sender_name }}</td>
+        <td>+{{ '{:,}'.format(row.amount) }}원</td>
+      {% endif %}
+    </tr>
+  {% else %}
+    <tr><td colspan="4" class="muted">거래 내역이 없습니다.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}
