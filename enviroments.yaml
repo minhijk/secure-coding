@@ -1,10 +1,26 @@
 name: secure_coding
+
 channels:
-  - defaults
+  # defaults(Anaconda 공식 채널)는 일정 규모 이상의 조직에서 상용 라이선스가
+  # 필요하다. 공개 저장소이므로 제약 없이 쓸 수 있는 conda-forge 를 사용한다.
+  - conda-forge
+
 dependencies:
-  - python=3.9
+  # Python 3.9 는 2025-10-31 자로 EOL 되어 보안 패치를 받지 못한다.
+  # 3.13 에서 전체 테스트(46건)를 검증했으며 3.11 이상이면 동작한다.
+  - python=3.13
   - pip
   - pip:
-    - flask>=3.1,<4
-    - flask-socketio>=5.5,<6
-    - pytest>=8,<10
+      # --- 런타임 ---
+      - flask>=3.1,<4
+      # werkzeug.security 의 비밀번호 해시를 직접 import 하므로,
+      # flask 의 전이 의존성이더라도 명시적으로 선언한다.
+      - werkzeug>=3.1,<4
+      - flask-socketio>=5.5,<6
+      # engineio 의 WebSocket 전송에 필요하다. 빠지면 통신이 HTTP 롱폴링으로
+      # 폴백되어 실시간 채팅 성능이 떨어진다. (python-engineio 의 필수 의존성이나
+      # 채팅이 핵심 기능이므로 의도를 드러내기 위해 명시한다)
+      - simple-websocket>=1.0
+
+      # --- 개발/테스트 ---
+      - pytest>=8,<10
