@@ -135,7 +135,7 @@ python -m pytest tests/ -q
 - `Content-Security-Policy`, `X-Frame-Options`, `X-Content-Type-Options`,
   `Referrer-Policy`, `Permissions-Policy`, `Cache-Control: no-store` 헤더 적용
 - 모든 상태 변경 POST 요청에 CSRF 토큰 검증 (`secrets.compare_digest`)
-- SocketIO 는 동일 출처만 허용, 요청 본문 크기 2MB 제한
+- SocketIO 는 동일 출처만 허용, 요청 본문 크기 5MB 제한
 - 4xx/5xx 응답에서 스택 트레이스·DB 오류 원문을 노출하지 않음
 
 전체 점검 항목과 결과는 `secure_coding_checklist.csv` 를 참고하세요.
